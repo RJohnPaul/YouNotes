@@ -170,8 +170,8 @@ export default function Home() {
                   </div>
                 </button>
 
-                <span className="mt-4">
-                  Made&nbsp;with&nbsp;❤️&nbsp;by&nbsp;John&nbsp;Paul
+                <span className="mt-4 text-neutral-600 dark:text-neutral-400">
+                  Made&nbsp;with&nbsp;❤️&nbsp;by&nbsp;<a className="cursor-pointer hover:underline transition-all hover:text-blue-400" target="_blank" href="https://john-porfolio.vercel.app">John&nbsp;Paul</a>
                 </span>
               </div>
             </div>
