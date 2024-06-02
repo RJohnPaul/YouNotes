@@ -6,9 +6,8 @@ import { Spotlight } from "@/components/Spotlight";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
-import { Button } from "@/components/ui/button";
+import { Toast, ToastAction, ToastProvider } from "@/components/ui/toast";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
 
 const fetch = require('node-fetch');
 
@@ -16,24 +15,26 @@ export default function Home() {
   const [qrCodeImage, setQRCodeImage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const { toast } = useToast();
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ title: '', description: '' });
 
   useEffect(() => {
+    let timer: string | number | NodeJS.Timeout | undefined;
     if (isLoading) {
-      const timer = setInterval(() => {
+      setProgress(0);
+      timer = setInterval(() => {
         setProgress((prevProgress) => {
           if (prevProgress >= 100) {
             clearInterval(timer);
             return 100;
           }
-          return prevProgress + 10;
+          return prevProgress + 1;
         });
-      }, 500);
-
-      return () => {
-        clearInterval(timer);
-      };
+      }, 50);
     }
+    return () => {
+      clearInterval(timer);
+    };
   }, [isLoading]);
 
   const placeholders = [
@@ -53,7 +54,6 @@ export default function Home() {
     const inputText = (e.currentTarget.elements[0] as HTMLInputElement).value;
 
     setIsLoading(true);
-    setProgress(0);
 
     const url = 'https://qrcode3.p.rapidapi.com/qrcode/text';
     const options = {
@@ -91,21 +91,12 @@ export default function Home() {
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
       setQRCodeImage(objectUrl);
-      toast({
-        variant: "default",
-        title: "QR Code Generated",
-        description: "Your QR code has been successfully generated.",
-        action: <ToastAction altText="View QR Code" onClick={() => window.open(objectUrl, "_blank")}>View</ToastAction>,
-        duration: 5000,
-      });
+      setToastMessage({ title: 'QR Code Generated', description: 'Your QR code has been successfully generated.' });
+      setShowToast(true);
     } catch (error) {
       console.error(error);
-      toast({
-        variant: "default",
-        title: "Error",
-        description: "Failed to generate QR code. Please try again.",
-        duration: 5000,
-      });
+      setToastMessage({ title: 'Error', description: 'Failed to generate QR code. Please try again.' });
+      setShowToast(true);
     } finally {
       setIsLoading(false);
     }
@@ -123,48 +114,87 @@ export default function Home() {
   const words = ["Websites", "Products", "Contacts", "Events"];
 
   return (
-    <div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24">
-      <Spotlight
-        className="-top-40 left-0 md:left-60 md:-top-20"
-        fill="blue"
-      />
-      <div className="mb-20">
-        <div className="flex justify-center items-center px-4">
-          <div className="text-5xl mx-auto font-normal text-neutral-600 dark:text-neutral-400">
-            Generate QR codes for your
-            <FlipWords words={words} /><br />
-            using QRGen
+    <ToastProvider>
+      <div className="relative flex min-h-screen flex-col">
+        <div className="flex-1 px-5 py-24">
+          <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
+          <div className="mb-20">
+            <div className="flex justify-center items-center px-4">
+              <div className="text-5xl mx-auto font-normal text-neutral-600 dark:text-neutral-400">
+                Generate QR codes for your
+                <div>
+                  <FlipWords words={words} />
+                  <br />
+                </div>
+                using QRGen
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <PlaceholdersAndVanishInput
-        placeholders={placeholders}
-        onChange={handleChange}
-        onSubmit={onSubmit}
-      />
-      {isLoading && (
-        <div className="mt-4">
-          <Progress value={progress} className="h-2 w-1/2 mx-auto" />
-        </div>
-      )}
-      {qrCodeImage && (
-        <div className="mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black px-3 py-2">
-          <div className="mt-8 flex flex-col items-center justify-center">
-            <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
-            <Button onClick={downloadQRCode} className="mt-4">Download QR Code</Button>
-          </div>
-        </div>
-      )}
+          <PlaceholdersAndVanishInput
+            placeholders={placeholders}
+            onChange={handleChange}
+            onSubmit={onSubmit}
+          />
+          {isLoading && (
+            <div className="mt-4">
+              <Progress value={progress} className="h-2 w-1/2 mx-auto" />
+            </div>
+          )}
+          {qrCodeImage && (
+            <div className="mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black px-3 py-2">
+              <div className="mt-8 flex flex-col items-center justify-center">
+                <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
+                <button
+                  onClick={downloadQRCode}
+                  className="px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium text-neutral-200 duration-500"
+                >
+                  <div className="translate-y-0 opacity-100 group-hover:-translate-y-[150%] group-hover:opacity-0 animate-shimmer items-center justify-center rounded-full border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 py-3 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+                    Download
+                  </div>
+                  <div className="animate-shimmer items-center justify-center rounded-full border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 py-3 font-medium text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 absolute translate-y-[150%] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                    >
+                      <path
+                        d="M7.5 2C7.77614 2 8 2.22386 8 2.5L8 11.2929L11.1464 8.14645C11.3417 7.95118 11.6583 7.95118 11.8536 8.14645C12.0488 8.34171 12.0488 8.65829 11.8536 8.85355L7.85355 12.8536C7.75979 12.9473 7.63261 13 7.5 13C7.36739 13 7.24021 12.9473 7.14645 12.8536L3.14645 8.85355C2.95118 8.65829 2.95118 8.34171 3.14645 8.14645C3.34171 7.95118 3.65829 7.95118 3.85355 8.14645L7 11.2929L7 2.5C7 2.22386 7.22386 2 7.5 2Z"
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                </button>
 
-      <div className="mt-20 rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
-        <InfiniteMovingCards
-          items={testimonials}
-          direction="right"
-          speed="slow"
-          className="w-full md:w-2/3 lg:w-1/2 xl:w-full"
+                <span className="mt-4">
+                  Made&nbsp;with&nbsp;❤️&nbsp;by&nbsp;John&nbsp;Paul
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-20 rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
+            <InfiniteMovingCards
+              items={testimonials}
+              direction="right"
+              speed="slow"
+              className="w-full"
+            />
+          </div>
+        </div>
+        <Toast
+          open={showToast}
+          onOpenChange={setShowToast}
+          variant="default"
+          {...toastMessage}
+          duration={5000}
         />
       </div>
-    </div>
+    </ToastProvider>
   );
 }
 
@@ -188,14 +218,19 @@ const testimonials = [
   },
   {
     quote:
-      "As a small business owner, QRGen has helped me streamline my operations. I can now quickly generate QR codes for my products and promotions. It's saved me so much time!",
+      "As a small business owner, QRGen has helped me streamline my operations. I can now quickly generate QR codes for my products and promotions!.",
     name: "Sarah Davis",
     title: "Entrepreneur",
   },
   {
     quote:
-      "QRGen is an essential tool for anyone looking to enhance their digital presence. The ability to create custom QR codes has opened up new possibilities for our marketing campaigns.",
+      "QRGen is an essential tool for anyone looking to enhance their digital presence. The ability to create custom QR codes has opened up new possibilities!.",
     name: "Michael Brown",
     title: "Digital Marketer",
   },
 ];
+
+
+// Button code
+
+

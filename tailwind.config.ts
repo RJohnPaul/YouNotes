@@ -16,9 +16,18 @@ const config: Config = {
       animation: {
         scroll:"scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
         spotlight: "spotlight 2s ease .75s 1 forwards",
-        "border-width": "border-width 3s infinite alternate"
+        "border-width": "border-width 3s infinite alternate",
+        shimmer: "shimmer 2s linear infinite"
       },
       keyframes: {
+        shimmer: {
+          from: {
+            "backgroundPosition": "0 0"
+          },
+          to: {
+            "backgroundPosition": "-200% 0"
+          }
+        },
         scroll: {
           to: {
             transform: "translate(calc(-50% - 0.5rem))",
