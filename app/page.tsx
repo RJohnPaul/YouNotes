@@ -96,6 +96,7 @@ export default function Home() {
         title: "QR Code Generated",
         description: "Your QR code has been successfully generated.",
         action: <ToastAction altText="View QR Code" onClick={() => window.open(objectUrl, "_blank")}>View</ToastAction>,
+        duration: 5000,
       });
     } catch (error) {
       console.error(error);
@@ -103,6 +104,7 @@ export default function Home() {
         variant: "default",
         title: "Error",
         description: "Failed to generate QR code. Please try again.",
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);
@@ -145,14 +147,14 @@ export default function Home() {
           <Progress value={progress} className="h-2 w-1/2 mx-auto" />
         </div>
       )}
-      <div className="mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black px-3 py-2">
-        {qrCodeImage && (
+      {qrCodeImage && (
+        <div className="mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black px-3 py-2">
           <div className="mt-8 flex flex-col items-center justify-center">
             <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
             <Button onClick={downloadQRCode} className="mt-4">Download QR Code</Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="mt-20 rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
         <InfiniteMovingCards
