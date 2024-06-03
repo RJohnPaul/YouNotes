@@ -2,6 +2,10 @@
 
 QRGen is a web application that allows users to generate custom QR codes for various purposes such as websites, products, contacts, and events. It provides an easy-to-use interface for creating QR codes with customizable styles and settings.
 
+## Demo
+
+ ![](https://github.com/RJohnPaul/CRUD-Basic-App/blob/main/Demo.gif)
+
 ## Features
 
 - Generate QR codes for websites, products, contacts, events, and more
