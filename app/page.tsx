@@ -21,7 +21,6 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState({ title: '', description: '' });
   const [mode, setMode] = useState('dark');
   const [inputText, setInputText] = useState('');
-  const [shouldGenerateQRCode, setShouldGenerateQRCode] = useState(false);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -92,13 +91,6 @@ export default function Home() {
     }
   }, [mode]);
 
-  useEffect(() => {
-    if (inputText && shouldGenerateQRCode) {
-      generateQRCode(inputText);
-      setShouldGenerateQRCode(false);
-    }
-  }, [inputText, shouldGenerateQRCode, generateQRCode]);
-
   const placeholders = [
     "Enter your website URL",
     "Enter your product link",
@@ -115,7 +107,7 @@ export default function Home() {
     e.preventDefault();
     const inputTextValue = (e.currentTarget.elements[0] as HTMLInputElement).value;
     setInputText(inputTextValue);
-    setShouldGenerateQRCode(true);
+    generateQRCode(inputTextValue);
   };
 
   const downloadQRCode = () => {
@@ -134,7 +126,7 @@ export default function Home() {
       <div className={`relative flex min-h-screen flex-col ${mode === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="flex-1 px-5 py-24">
           <Alert className="mb-4">
-            <AlertTitle>API Limit Exceeded</AlertTitle>
+            <AlertTitle>Notice</AlertTitle>
             <AlertDescription>
               If the API limit is exceeded, QR codes won&apos;t be generated. Please try again later.
             </AlertDescription>
@@ -222,7 +214,7 @@ export default function Home() {
             checked={mode === 'dark'}
             onCheckedChange={(checked) => {
               setMode(checked ? 'dark' : 'light');
-              setShouldGenerateQRCode(true);
+              generateQRCode(inputText);
             }}
           />
         </div>
