@@ -21,6 +21,7 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState({ title: '', description: '' });
   const [mode, setMode] = useState('dark');
   const [inputText, setInputText] = useState('');
+  const [shouldGenerateQRCode, setShouldGenerateQRCode] = useState(false);
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -92,17 +93,18 @@ export default function Home() {
   }, [mode]);
 
   useEffect(() => {
-    if (inputText) {
+    if (inputText && shouldGenerateQRCode) {
       generateQRCode(inputText);
+      setShouldGenerateQRCode(false);
     }
-  }, [mode, generateQRCode, inputText]);
+  }, [inputText, shouldGenerateQRCode, generateQRCode]);
 
   const placeholders = [
     "Enter your website URL",
     "Enter your product link",
     "Enter your github link",
     "Enter your social media handle",
-    "Enter your Facebook page",
+    "Enter your facebook page",
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +115,7 @@ export default function Home() {
     e.preventDefault();
     const inputTextValue = (e.currentTarget.elements[0] as HTMLInputElement).value;
     setInputText(inputTextValue);
-    generateQRCode(inputTextValue);
+    setShouldGenerateQRCode(true);
   };
 
   const downloadQRCode = () => {
@@ -132,7 +134,7 @@ export default function Home() {
       <div className={`relative flex min-h-screen flex-col ${mode === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="flex-1 px-5 py-24">
           <Alert className="mb-4">
-            <AlertTitle>Notice</AlertTitle>
+            <AlertTitle>API Limit Exceeded</AlertTitle>
             <AlertDescription>
               If the API limit is exceeded, QR codes won&apos;t be generated. Please try again later.
             </AlertDescription>
@@ -167,7 +169,7 @@ export default function Home() {
                 <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
                 <button
                   onClick={downloadQRCode}
-                  className={`pt-3 px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium ${mode === 'dark' ? 'text-neutral-200' : 'text-neutral-600'} duration-500`}
+                  className={`px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium ${mode === 'dark' ? 'text-neutral-200' : 'text-neutral-600'} duration-500`}
                 >
                   <div className={`translate-y-0 opacity-100 group-hover:-translate-y-[150%] group-hover:opacity-0 animate-shimmer items-center justify-center rounded-full ${mode === 'dark' ? 'border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] text-slate-400' : 'border-gray-300 bg-[linear-gradient(110deg,#ffffff,45%,#f0f0f0,55%,#ffffff)] bg-[length:200%_100%] text-gray-600'} px-6 py-3 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${mode === 'dark' ? 'focus:ring-slate-400 focus:ring-offset-slate-50' : 'focus:ring-gray-400 focus:ring-offset-white'}`}>
                     Download
@@ -218,7 +220,10 @@ export default function Home() {
           <Switch
             id="mode-toggle"
             checked={mode === 'dark'}
-            onCheckedChange={(checked) => setMode(checked ? 'dark' : 'light')}
+            onCheckedChange={(checked) => {
+              setMode(checked ? 'dark' : 'light');
+              setShouldGenerateQRCode(true);
+            }}
           />
         </div>
       </div>
