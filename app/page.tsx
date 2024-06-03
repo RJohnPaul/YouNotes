@@ -55,7 +55,7 @@ export default function Home() {
         data: inputTextValue,
         style: {
           module: {
-            color: mode === 'dark' ? 'white' : 'black',
+            color: mode === 'dark' ? '#FFFFFF' : '#000000',
             shape: 'default'
           },
           inner_eye: { shape: 'default' },
@@ -212,7 +212,8 @@ export default function Home() {
             id="mode-toggle"
             checked={mode === 'dark'}
             onCheckedChange={(checked) => {
-              setMode(checked ? 'dark' : 'light');
+              const newMode = checked ? 'dark' : 'light';
+              setMode(newMode);
               generateQRCode(inputText);
             }}
           />
