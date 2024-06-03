@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Spotlight } from "@/components/Spotlight";
@@ -8,6 +8,8 @@ import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-van
 import { Progress } from "@/components/ui/progress";
 import { Toast, ToastAction, ToastProvider } from "@/components/ui/toast";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const fetch = require('node-fetch');
 
@@ -17,6 +19,8 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState({ title: '', description: '' });
+  const [mode, setMode] = useState('dark');
+  const [inputText, setInputText] = useState('');
 
   useEffect(() => {
     let timer: string | number | NodeJS.Timeout | undefined;
@@ -37,22 +41,7 @@ export default function Home() {
     };
   }, [isLoading]);
 
-  const placeholders = [
-    "Enter your website URL",
-    "Enter your product link",
-    "Enter your github link",
-    "Enter your social media handle",
-    "Enter your facebook page",
-  ];
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-  };
-
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const inputText = (e.currentTarget.elements[0] as HTMLInputElement).value;
-
+  const generateQRCode = useCallback(async (inputTextValue: string) => {
     setIsLoading(true);
 
     const url = 'https://qrcode3.p.rapidapi.com/qrcode/text';
@@ -64,10 +53,10 @@ export default function Home() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        data: inputText,
+        data: inputTextValue,
         style: {
           module: {
-            color: 'white',
+            color: mode === 'dark' ? 'white' : 'black',
             shape: 'default'
           },
           inner_eye: { shape: 'default' },
@@ -100,6 +89,31 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  }, [mode]);
+
+  useEffect(() => {
+    if (inputText) {
+      generateQRCode(inputText);
+    }
+  }, [mode, generateQRCode]);
+
+  const placeholders = [
+    "Enter your website URL",
+    "Enter your product link",
+    "Enter your github link",
+    "Enter your social media handle",
+    "Enter your facebook page",
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const inputTextValue = (e.currentTarget.elements[0] as HTMLInputElement).value;
+    setInputText(inputTextValue);
+    generateQRCode(inputTextValue);
   };
 
   const downloadQRCode = () => {
@@ -115,18 +129,25 @@ export default function Home() {
 
   return (
     <ToastProvider>
-      <div className="relative flex min-h-screen flex-col">
+      <div className={`relative flex min-h-screen flex-col ${mode === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="flex-1 px-5 py-24">
-          <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
+          <Alert className="mb-4">
+            <AlertTitle>API Limit Exceeded</AlertTitle>
+            <AlertDescription>
+              If the API limit is exceeded, QR codes won&apos;t be generated. Please try again later.
+            </AlertDescription>
+          </Alert>
+
+          <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill={mode === 'dark' ? 'blue' : 'black'} />
           <div className="mb-20">
             <div className="flex justify-center items-center px-4">
-              <div className="text-5xl mx-auto font-normal text-neutral-600 dark:text-neutral-400">
+              <div className={`text-5xl mx-auto font-normal ${mode === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
                 Generate QR codes for your
-                <div>
+                <div className="hidden lg:block">
                   <FlipWords words={words} />
                   <br />
                 </div>
-                using QRGen
+                <div className="lg:hidden">using QRGen</div>
               </div>
             </div>
           </div>
@@ -141,17 +162,17 @@ export default function Home() {
             </div>
           )}
           {qrCodeImage && (
-            <div className="mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black px-3 py-2">
+            <div className={`mt-8 pb-10 items-center justify-center rounded-md border ${mode === 'dark' ? 'border-gray-800 bg-gradient-to-b from-gray-950 to-black' : 'border-gray-200 bg-white'} px-3 py-2`}>
               <div className="mt-8 flex flex-col items-center justify-center">
                 <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
                 <button
                   onClick={downloadQRCode}
-                  className="px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium text-neutral-200 duration-500"
+                  className={`px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium ${mode === 'dark' ? 'text-neutral-200' : 'text-neutral-600'} duration-500`}
                 >
-                  <div className="translate-y-0 opacity-100 group-hover:-translate-y-[150%] group-hover:opacity-0 animate-shimmer items-center justify-center rounded-full border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 py-3 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+                  <div className={`translate-y-0 opacity-100 group-hover:-translate-y-[150%] group-hover:opacity-0 animate-shimmer items-center justify-center rounded-full ${mode === 'dark' ? 'border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] text-slate-400' : 'border-gray-300 bg-[linear-gradient(110deg,#ffffff,45%,#f0f0f0,55%,#ffffff)] bg-[length:200%_100%] text-gray-600'} px-6 py-3 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${mode === 'dark' ? 'focus:ring-slate-400 focus:ring-offset-slate-50' : 'focus:ring-gray-400 focus:ring-offset-white'}`}>
                     Download
                   </div>
-                  <div className="animate-shimmer items-center justify-center rounded-full border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 py-3 font-medium text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 absolute translate-y-[150%] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className={`animate-shimmer items-center justify-center rounded-full ${mode === 'dark' ? 'border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] text-slate-400' : 'border-gray-300 bg-[linear-gradient(110deg,#ffffff,45%,#f0f0f0,55%,#ffffff)] bg-[length:200%_100%] text-gray-600'} px-6 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${mode === 'dark' ? 'focus:ring-slate-400 focus:ring-offset-slate-50' : 'focus:ring-gray-400 focus:ring-offset-white'} absolute translate-y-[150%] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100`}>
                     <svg
                       width="15"
                       height="15"
@@ -170,14 +191,14 @@ export default function Home() {
                   </div>
                 </button>
 
-                <span className="mt-4 text-neutral-600 dark:text-neutral-400">
+                <span className={`mt-4 ${mode === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
                   Made&nbsp;with&nbsp;❤️&nbsp;by&nbsp;<a className="cursor-pointer hover:underline transition-all hover:text-blue-400" target="_blank" href="https://john-porfolio.vercel.app">John&nbsp;Paul</a>
                 </span>
               </div>
             </div>
           )}
 
-          <div className="mt-20 rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
+          <div className={`mt-20 rounded-md flex flex-col antialiased ${mode === 'dark' ? 'bg-black bg-grid-white/[0.05]' : 'bg-white'} items-center justify-center relative overflow-hidden`}>
             <InfiniteMovingCards
               items={testimonials}
               direction="right"
@@ -193,6 +214,13 @@ export default function Home() {
           {...toastMessage}
           duration={5000}
         />
+        <div className="fixed bottom-4 right-4">
+          <Switch
+            id="mode-toggle"
+            checked={mode === 'dark'}
+            onCheckedChange={(checked) => setMode(checked ? 'dark' : 'light')}
+          />
+        </div>
       </div>
     </ToastProvider>
   );
@@ -229,8 +257,3 @@ const testimonials = [
     title: "Digital Marketer",
   },
 ];
-
-
-// Button code
-
-
