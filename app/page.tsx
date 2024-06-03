@@ -95,7 +95,7 @@ export default function Home() {
     if (inputText) {
       generateQRCode(inputText);
     }
-  }, [mode, generateQRCode]);
+  }, [mode, generateQRCode, inputText]);
 
   const placeholders = [
     "Enter your website URL",
