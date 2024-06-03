@@ -132,7 +132,7 @@ export default function Home() {
       <div className={`relative flex min-h-screen flex-col ${mode === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="flex-1 px-5 py-24">
           <Alert className="mb-4">
-            <AlertTitle>API Limit Exceeded</AlertTitle>
+            <AlertTitle>Notice</AlertTitle>
             <AlertDescription>
               If the API limit is exceeded, QR codes won&apos;t be generated. Please try again later.
             </AlertDescription>
