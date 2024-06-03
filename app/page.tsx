@@ -167,7 +167,7 @@ export default function Home() {
                 <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
                 <button
                   onClick={downloadQRCode}
-                  className={`px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium ${mode === 'dark' ? 'text-neutral-200' : 'text-neutral-600'} duration-500`}
+                  className={`pt-3 px-6 py-3 group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md font-medium ${mode === 'dark' ? 'text-neutral-200' : 'text-neutral-600'} duration-500`}
                 >
                   <div className={`translate-y-0 opacity-100 group-hover:-translate-y-[150%] group-hover:opacity-0 animate-shimmer items-center justify-center rounded-full ${mode === 'dark' ? 'border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] text-slate-400' : 'border-gray-300 bg-[linear-gradient(110deg,#ffffff,45%,#f0f0f0,55%,#ffffff)] bg-[length:200%_100%] text-gray-600'} px-6 py-3 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${mode === 'dark' ? 'focus:ring-slate-400 focus:ring-offset-slate-50' : 'focus:ring-gray-400 focus:ring-offset-white'}`}>
                     Download
