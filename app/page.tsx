@@ -7,7 +7,6 @@ import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Progress } from "@/components/ui/progress";
 import { Toast, ToastAction, ToastProvider } from "@/components/ui/toast";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from "@/components/ui/navigation-menu";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -125,7 +124,7 @@ export default function Home() {
     <ToastProvider>
       <div className={`relative flex min-h-screen flex-col ${mode === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="flex-1 px-5 py-24">
-          <Alert className="mb-4">
+          <Alert className="mb-4 py-4">
             <AlertTitle>Notice</AlertTitle>
             <AlertDescription>
               If the API limit is exceeded, QR codes won&apos;t be generated. Please try again later.
@@ -135,13 +134,13 @@ export default function Home() {
           <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill={mode === 'dark' ? 'blue' : 'black'} />
           <div className="mb-20">
             <div className="flex justify-center items-center px-4">
-              <div className={`text-5xl mx-auto font-normal ${mode === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
+              <div className={`pt-10 text-5xl mx-auto font-normal ${mode === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
                 Generate QR codes for your
                 <div className="hidden lg:block">
                   <FlipWords words={words} />
                   <br />
                 </div>
-                <div className="lg:hidden">using QRGen</div>
+                <div className="lg:hidden">using QRGen-v1</div>
               </div>
             </div>
           </div>
