@@ -102,7 +102,7 @@ export default function Home() {
     "Enter your product link",
     "Enter your github link",
     "Enter your social media handle",
-    "Enter your facebook page",
+    "Enter your Facebook page",
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
