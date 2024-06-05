@@ -1,11 +1,12 @@
 'use client';
- import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { FlipWords } from "@/components/ui/flip-words";
 import { Spotlight } from "@/components/Spotlight";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot } from '@mui/lab';
 
 export default function Home() {
   const [qrCodeImage, setQRCodeImage] = useState("");
@@ -20,7 +21,7 @@ export default function Home() {
   const placeholders = [
     "Enter your website URL",
     "Enter your product link",
-    "Enter your github link",
+    "Enter your github link", 
     "Enter your social media handle",
     "Enter your facebook page",
   ];
@@ -53,23 +54,23 @@ export default function Home() {
         <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
         <div className="mb-20">
           <div className="flex justify-center items-center px-4">
-            <div className="pt-10 text-5xl mx-auto font-normal text-neutral-400">
-              Generate QR codes for your
+            <div className="pt-10 mx-auto font-normal text-neutral-600">
+              <h1 className="text-6xl font-bold mb-4">Generate QR codes for your</h1>
               <div className="hidden lg:block">
-                <FlipWords words={words} />
+                <FlipWords words={words} className="text-5xl" />
                 <br />
               </div>
-              <div className="lg:hidden">using QRGen-v1</div>
+              <div className="lg:hidden text-4xl">using QRGen-v1</div>
             </div>
           </div>
         </div>
-        <PlaceholdersAndVanishInput
+        <PlaceholdersAndVanishInput 
           placeholders={placeholders}
           onChange={handleChange}
           onSubmit={onSubmit}
         />
         {qrCodeImage && (
-          <div className='mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black'>
+          <div className="mt-8 pb-10 items-center justify-center rounded-md border border-gray-800 bg-gradient-to-b from-gray-950 to-black">
             <div className="mt-8 flex flex-col items-center justify-center">
               <div className="mb-4">
                 <Image src={qrCodeImage} alt="QR Code" width={200} height={200} />
@@ -82,11 +83,11 @@ export default function Home() {
                   Download
                 </div>
                 <div className="animate-shimmer items-center justify-center rounded-full border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] text-slate-400 px-6 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400 focus:ring-offset-slate-50 absolute translate-y-[150%] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 15 15"
-                    fill="none"
+                  <svg 
+                    width="15" 
+                    height="15" 
+                    viewBox="0 0 15 15" 
+                    fill="none" 
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
                   >
@@ -117,11 +118,44 @@ export default function Home() {
         </div>
 
         <div className="mt-10 rounded-md shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">Updates</h2>
-          <ul className="list-disc pl-5">
-            <li>New API implementation for generating QR codes.</li>
-            <li>Removed toggle button and toasts.</li>
-          </ul>
+          <h2 className="text-2xl font-semibold mb-4 text-neutral-400">Updates</h2>
+          <Timeline>
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <p className="text-neutral-500">RapidAPI implementation for generating QR codes.</p>
+              </TimelineContent>
+            </TimelineItem>
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <p className="text-neutral-500">Removed toasts, alerts, and Dark Mode Toggle.</p>
+              </TimelineContent>
+            </TimelineItem>
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <p className="text-neutral-500">Unlimited QR API implemented.</p>
+              </TimelineContent>
+            </TimelineItem>
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot />
+              </TimelineSeparator>
+              <TimelineContent>
+                <p className="text-neutral-500">Changes in font styles.</p>  
+              </TimelineContent>
+            </TimelineItem>
+          </Timeline>
         </div>
       </div>
     </div>
@@ -138,7 +172,7 @@ const testimonials = [
   {
     quote:
       "I've been using QRGen for my personal brand, and it has made sharing my contact information and social media profiles a breeze. Highly recommended!",
-    name: "Jane Smith",
+    name: "Jane Smith", 
     title: "Influencer",
   },
   {
@@ -148,13 +182,13 @@ const testimonials = [
   },
   {
     quote:
-      "As a small business owner, QRGen has helped me streamline my operations. I can now quickly generate QR codes for my products and promotions!.",
+      "As a small business owner, QRGen has helped me streamline my operations. I can now quickly generate QR codes for my products and promotions!",
     name: "Sarah Davis",
     title: "Entrepreneur",
   },
   {
     quote:
-      "QRGen is an essential tool for anyone looking to enhance their digital presence. The ability to create custom QR codes has opened up new possibilities!.",
+      "QRGen is an essential tool for anyone looking to enhance their digital presence. The ability to create custom QR codes has opened up new possibilities!",
     name: "Michael Brown",
     title: "Digital Marketer",
   },
