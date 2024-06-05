@@ -50,7 +50,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col bg-black">
       <div className="flex-1 px-5 py-24">
-        <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
+        <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
         <div className="mb-20">
           <div className="flex justify-center items-center px-4">
             <div className="pt-10 text-5xl mx-auto font-normal text-neutral-400">
