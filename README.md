@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/RJohnPaul/YouNotes/blob/b3832fa77172e4a06b9f7a8da294bf3a8fd5a3f0/ezgif-2-3c2c970717%20(1).gif" alt="YouNotes Logo"/>
+  <img src="https://github.com/RJohnPaul/YouNotes/blob/b9d0b09e11fe1555f1137053f114d6c42c95a824/ezgif-2-3c2c970717%20(2).gif" alt="YouNotes Logo"/>
 </p>
 
 
