@@ -16,6 +16,27 @@ import { Highlight } from "@/components/ui/hero-highlight";
 import { motion } from "framer-motion";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 import AuthForm from "./AuthForm";
+import Image from "next/image";
+import { cn } from "@/utils/cn";
+import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid";
+import { 
+  IconClipboardCopy, 
+  IconFileBroken, 
+  IconSignature, 
+  IconTableColumn, 
+  IconArrowWaveRightUp, 
+  IconBoxAlignTopLeft, 
+  IconBoxAlignRightFilled,
+  IconNote,
+  IconBrain,
+  IconBook2,
+  IconClock,
+  IconFileText,
+  IconSettings,
+  IconApps
+} from '@tabler/icons-react';
+ 
+
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_API_KEY);
 
@@ -173,6 +194,54 @@ export default function Home() {
     setUserName(null);
   };
 
+  const Skeleton = () => (
+    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+  );
+  const items = [
+    {
+      title: "Effortless Note-Taking",
+      description: "Transform YouTube videos and transcripts into concise notes with ease.",
+      header: <IconNote className="h-8 w-8 text-blue-500" />,
+      icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "AI-Powered Summarization",
+      description: "Harness the power of AI to create accurate and meaningful summaries.",
+      header: <IconBrain className="h-8 w-8 text-purple-500" />,
+      icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "Streamlined Learning",
+      description: "Enhance your study process with organized and accessible notes.",
+      header: <IconBook2 className="h-8 w-8 text-green-500" />,
+      icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "Time-Saving Solution",
+      description: "Save hours of manual note-taking with our automated system.",
+      header: <IconClock className="h-8 w-8 text-red-500" />,
+      icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "Versatile Content Processing",
+      description: "Handle various input formats, from text transcripts to YouTube URLs.",
+      header: <IconFileText className="h-8 w-8 text-yellow-500" />,
+      icon: <IconArrowWaveRightUp className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "Customizable Output",
+      description: "Tailor your notes to your specific needs and preferences.",
+      header: <IconSettings className="h-8 w-8 text-indigo-500" />,
+      icon: <IconBoxAlignTopLeft className="h-4 w-4 text-neutral-500" />,
+    },
+    {
+      title: "Seamless Integration",
+      description: "Easily incorporate YouNotes into your existing workflow and tools.",
+      header: <IconApps className="h-8 w-8 text-pink-500" />,
+      icon: <IconBoxAlignRightFilled className="h-4 w-4 text-neutral-500" />,
+    },
+  ];
+
   const testimonials = [
     {
       quote: "YouNotes has revolutionized the way we share information. It's so easy to create QR codes for our website and products. Our customers love it!",
@@ -200,10 +269,13 @@ export default function Home() {
       title: "Digital Marketer",
     },
   ];
-
+  
   if (!session) {
-    return <AuthForm />;
+    return (
+        <AuthForm />
+    );
   }
+
 
   return (
     <>
@@ -244,6 +316,7 @@ export default function Home() {
           </Highlight>
         </motion.h1>
       </div>
+      
       <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
         <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
         <Card className="w-full max-w-3xl shadow-lg rounded-lg">
@@ -308,14 +381,32 @@ export default function Home() {
                   className="w-full bg-gray-100 border border-gray-800 dark:bg-gray-950/50 dark:text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-800/50 focus:border-transparent"
                 />
                 <div className="flex justify-end mt-4">
-                  <HoverBorderGradient
-                    onClick={() => handleGenerateNotes('youtube')}
-                    containerClassName="rounded-full"
-                    as="button"
-                    className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-0.5"
-                  >
-                    <span>Generate Notes</span>
-                  </HoverBorderGradient>
+                  <button onClick={() => handleGenerateNotes('youtube')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
+                    <span className="absolute inset-0 overflow-hidden rounded-lg">
+                      <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    </span>
+                    <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
+                      <span>
+                        Generate
+                      </span>
+                      <svg
+                        fill="none"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        width="16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.75 8.75L14.25 12L10.75 15.25"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                        />
+                      </svg>
+                    </div>
+                    <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+                  </button>
                 </div>
               </TabsContent>
             </Tabs>
@@ -362,7 +453,19 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-      <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
+      <BentoGrid className="max-w-4xl mx-auto mt-20">
+      {items.map((item, i) => (
+        <BentoGridItem
+          key={i}
+          title={item.title}
+          description={item.description}
+          header={item.header}
+          icon={item.icon}
+          className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+        />
+      ))}
+    </BentoGrid>
+    <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
         <InfiniteMovingCards
           items={testimonials}
           direction="right"
@@ -372,4 +475,5 @@ export default function Home() {
       </div>
     </>
   );
+  
 }
