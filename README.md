@@ -23,7 +23,7 @@ YouNotes is an AI-powered tool that automatically generates concise, well-struct
 
 ## Demo
 
-[Link to live demo]
+[Link to live demo]("https://you-notes-rouge.vercel.app/")
 
 ![YouNotes Demo](path_to_demo_gif.gif)
 
