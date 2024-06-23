@@ -1,7 +1,7 @@
 # YouNotes
 
 <p align="center">
-  <img src="path_to_your_logo.png" alt="YouNotes Logo" width="200"/>
+  <img src="https://github.com/RJohnPaul/YouNotes/blob/73d8bb4c2994cb90a1f479e8173db640a03ba4cd/meow%20(1).png" alt="YouNotes Logo"/>
 </p>
 
 YouNotes is an AI-powered tool that automatically generates concise, well-structured notes from YouTube videos and text transcripts. Transform hours of content into digestible summaries with just a click!
