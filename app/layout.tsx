@@ -7,8 +7,8 @@ import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "QRGen",
-  description: "Next.js Powered QR Code Generator",
+  title: "YouNotes",
+  description: "Next.js Powered Youtube Notes WebApp",
 };
 
 export default function RootLayout({
