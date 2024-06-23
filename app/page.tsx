@@ -1,5 +1,7 @@
 'use client';
-import React, { useState, forwardRef, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Session } from '@supabase/supabase-js';
+import { supabase } from './supabaseClient';
 import { Spotlight } from "@/components/Spotlight";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -13,9 +15,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Highlight } from "@/components/ui/hero-highlight";
 import { motion } from "framer-motion";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+import AuthForm from "./AuthForm";
+
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_API_KEY);
 
-const MAX_TOKENS = 1000; // Define MAX_TOKENS constant
+const MAX_TOKENS = 1000;
 
 export default function Home() {
   const [transcript, setTranscript] = useState('');
@@ -26,6 +30,30 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
+  const [session, setSession] = useState<Session | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        setUserName(session.user.email || session.user.user_metadata.full_name || 'User');
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user) {
+        setUserName(session.user.email || session.user.user_metadata.full_name || 'User');
+      } else {
+        setUserName(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -48,8 +76,6 @@ export default function Home() {
   const handleTranscriptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setTranscript(value);
-
-    // Calculate the number of tokens in the transcript
     const tokens = value.split(/\s+/).length;
     setRemainingTokens(MAX_TOKENS - tokens);
   };
@@ -141,6 +167,12 @@ export default function Home() {
     });
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+    setUserName(null);
+  };
+
   const testimonials = [
     {
       quote: "YouNotes has revolutionized the way we share information. It's so easy to create QR codes for our website and products. Our customers love it!",
@@ -169,8 +201,26 @@ export default function Home() {
     },
   ];
 
+  if (!session) {
+    return <AuthForm />;
+  }
+
   return (
     <>
+      <div className="fixed top-0 right-0 m-4 z-50">
+        <div className="flex items-center space-x-4">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {userName}
+          </span>
+          <button
+            onClick={handleSignOut}
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+
       <div className="mt-20 mb-20">
         <motion.h1
           initial={{
@@ -193,9 +243,6 @@ export default function Home() {
             A&nbsp;Click&nbsp;Away.
           </Highlight>
         </motion.h1>
-      </div>
-      <div>
-      
       </div>
       <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
         <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
@@ -226,11 +273,11 @@ export default function Home() {
                     Remaining Tokens: {remainingTokens} / {MAX_TOKENS}
                   </p>
                   <button onClick={() => handleGenerateNotes('transcript')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
-                    <span onClick={() => handleGenerateNotes('transcript')} className="absolute inset-0 overflow-hidden rounded-lg">
-                      <span onClick={() => handleGenerateNotes('transcript')} className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    <span className="absolute inset-0 overflow-hidden rounded-lg">
+                      <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                     </span>
-                    <div onClick={() => handleGenerateNotes('transcript')} className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-                      <span onClick={() => handleGenerateNotes('transcript')}>
+                    <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
+                      <span>
                         Generate
                       </span>
                       <svg
@@ -249,7 +296,7 @@ export default function Home() {
                         />
                       </svg>
                     </div>
-                    <span onClick={() => handleGenerateNotes('transcript')} className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+                    <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
                   </button>
                 </div>
               </TabsContent>
@@ -279,8 +326,7 @@ export default function Home() {
             )}
             {notes && (
               <div className="mt-8 p-6 md:p-8 lg:p-6 space-y-6 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Generated Notes</h3>
+                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-semibold">Generated Notes</h3>
                   <button onClick={copyToClipboard} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block">
                     <span className="absolute inset-0 overflow-hidden rounded-full">
                       <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
