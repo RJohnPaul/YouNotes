@@ -25,7 +25,7 @@ export function AuthForm() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session) {
-          router.push('/dashboard'); // Redirect to dashboard on successful auth
+          router.push('/'); // Redirect to dashboard on successful auth
         }
       }
     );
