@@ -82,7 +82,7 @@ export function AnimatedTabs({
           </button>
         ))}
       </div>
-      <div className="mt-4 rounded-xl overflow-hidden relative w-[900px] h-[500px]">
+      <div className="mt-4 rounded-xl overflow-hidden relative w-[900px] h-[500px] border border-gray-700/50">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIdx}
