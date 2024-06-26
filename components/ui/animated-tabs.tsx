@@ -5,9 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from 'next/image';
 import { cn } from "../../utils/cn";
 
+import productImage from '../../app/images/how.png';
+import servicesImage from '../../app/images/whom.png';
+import aboutImage from '../../app/images/why.png';
+
 type Tab = {
   title: string;
-  image: string;
+  image: any;  // Change type to 'any' to accept imported images
 };
 
 type AnimatedTabsProps = {
@@ -25,16 +29,16 @@ export function AnimatedTabs({
 
   const tabs: Tab[] = [
     {
-      title: "Product",
-      image: "/path-to-product-image.png",
+      title: "How",
+      image: productImage,
     },
     {
-      title: "Services",
-      image: "/path-to-services-image.png",
+      title: "Whom",
+      image: servicesImage,
     },
     {
-      title: "About",
-      image: "/path-to-about-image.png",
+      title: "How",
+      image: aboutImage,
     },
   ];
 
@@ -78,7 +82,7 @@ export function AnimatedTabs({
           </button>
         ))}
       </div>
-      <div className="mt-4 rounded-lg overflow-hidden relative w-[300px] h-[300px]">
+      <div className="mt-4 rounded-xl overflow-hidden relative w-[900px] h-[500px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIdx}
