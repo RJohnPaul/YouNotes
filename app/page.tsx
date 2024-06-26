@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Progress } from "@/components/ui/progress";
 import ReactMarkdown from 'react-markdown';
+import { AnimatedTabs } from "@/components/ui/animated-tabs";
 import { Textarea } from "@/components/ui/textarea";
 import remarkGfm from 'remark-gfm';
 import { useToast } from '@/components/ui/use-toast';
@@ -270,11 +271,11 @@ export default function Home() {
     },
   ];
   
-  if (!session) {
-    return (
-        <AuthForm />
-    );
-  }
+ // if (!session) {
+ //   return (
+   //     <AuthForm />
+ //   );
+ // }
 
 
   return (
@@ -316,7 +317,6 @@ export default function Home() {
           </Highlight>
         </motion.h1>
       </div>
-      
       <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
         <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="blue" />
         <Card className="w-full max-w-3xl shadow-lg rounded-lg">
@@ -328,7 +328,7 @@ export default function Home() {
               Generate notes from a transcript or YouTube video.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 md:p-8 lg:p-10 space-y-6">
+          <CardContent className="p-6 md:p-8 lg:p-10 space-y-6 bg-black shadow-2xl shadow-indigo-500/40">
             <Tabs defaultValue="transcript" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="transcript">Transcript</TabsTrigger>
@@ -453,6 +453,7 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+      <AnimatedTabs/>
       <BentoGrid className="max-w-4xl mx-auto mt-20">
       {items.map((item, i) => (
         <BentoGridItem
@@ -466,12 +467,7 @@ export default function Home() {
       ))}
     </BentoGrid>
     <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
-        <InfiniteMovingCards
-          items={testimonials}
-          direction="right"
-          speed="slow"
-          className="w-full"
-        />
+        
       </div>
     </>
   );
