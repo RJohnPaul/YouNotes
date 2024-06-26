@@ -11,7 +11,7 @@ import aboutImage from '../../app/images/why.png';
 
 type Tab = {
   title: string;
-  image: any;  // Change type to 'any' to accept imported images
+  image: any;
 };
 
 type AnimatedTabsProps = {
@@ -37,16 +37,16 @@ export function AnimatedTabs({
       image: servicesImage,
     },
     {
-      title: "How",
+      title: "Why",
       image: aboutImage,
     },
   ];
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
         className={cn(
-          "relative flex flex-wrap items-center justify-center mb-4",
+          "relative flex flex-wrap items-center justify-center mb-4 space-x-2",
           containerClassName
         )}
       >
@@ -55,34 +55,28 @@ export function AnimatedTabs({
             key={tab.title}
             onClick={() => setActiveIdx(index)}
             className={cn(
-              "group relative z-[1] rounded-full px-4 py-2",
-              { "z-0": activeIdx === index },
+              "group relative z-[1] rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200",
+              activeIdx === index 
+                ? "text-white" 
+                : "text-gray-400 hover:text-gray-300",
               tabClassName
             )}
           >
             {activeIdx === index && (
               <motion.div
-                layoutId="clicked-button"
-                transition={{ duration: 0.2 }}
+                layoutId="active-pill"
+                transition={{ duration: 0.3 }}
                 className={cn(
-                  "absolute inset-0 rounded-full bg-white",
+                  "absolute inset-0 rounded-full bg-gray-800",
                   activeTabClassName
                 )}
               />
             )}
-
-            <span
-              className={cn(
-                "relative text-sm block font-medium duration-200",
-                activeIdx === index ? "text-black delay-100" : "text-white"
-              )}
-            >
-              {tab.title}
-            </span>
+            <span className="relative z-10">{tab.title}</span>
           </button>
         ))}
       </div>
-      <div className="mt-4 rounded-xl overflow-hidden relative w-[900px] h-[500px] border border-gray-700/50">
+      <div className="mt-4 rounded-xl overflow-hidden relative w-full aspect-video border border-gray-700/50">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIdx}
@@ -97,7 +91,7 @@ export function AnimatedTabs({
               alt={tabs[activeIdx].title}
               layout="fill"
               objectFit="cover"
-              className="rounded-lg"
+              className="rounded-xl"
             />
           </motion.div>
         </AnimatePresence>

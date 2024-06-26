@@ -20,13 +20,13 @@ import AuthForm from "./AuthForm";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
 import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid";
-import { 
-  IconClipboardCopy, 
-  IconFileBroken, 
-  IconSignature, 
-  IconTableColumn, 
-  IconArrowWaveRightUp, 
-  IconBoxAlignTopLeft, 
+import {
+  IconClipboardCopy,
+  IconFileBroken,
+  IconSignature,
+  IconTableColumn,
+  IconArrowWaveRightUp,
+  IconBoxAlignTopLeft,
   IconBoxAlignRightFilled,
   IconNote,
   IconBrain,
@@ -36,8 +36,6 @@ import {
   IconSettings,
   IconApps
 } from '@tabler/icons-react';
- 
-
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_API_KEY);
 
@@ -196,8 +194,9 @@ export default function Home() {
   };
 
   const Skeleton = () => (
-    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-200 dark:from-neutral-900 dark:to-neutral-800 to-neutral-100"></div>
+    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-900 to-neutral-800"></div>
   );
+
   const items = [
     {
       title: "Effortless Note-Taking",
@@ -270,19 +269,19 @@ export default function Home() {
       title: "Digital Marketer",
     },
   ];
-  
+
+    
  // if (!session) {
  //   return (
    //     <AuthForm />
  //   );
  // }
 
-
   return (
     <>
       <div className="fixed top-0 right-0 m-4 z-50">
         <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium text-gray-300">
             {userName}
           </span>
           <button
@@ -308,11 +307,11 @@ export default function Home() {
             duration: 0.2,
             ease: [0.4, 0.0, 0.2, 1],
           }}
-          className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
+          className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
         >
           With YouNotes, Everything is possible . Everything
           is{" "}
-          <Highlight className="text-black dark:text-white">
+          <Highlight className="text-white">
             A&nbsp;Click&nbsp;Away.
           </Highlight>
         </motion.h1>
@@ -320,7 +319,7 @@ export default function Home() {
       <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
         <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="green" />
         <Card className="w-full max-w-3xl shadow-lg rounded-lg">
-          <CardHeader className="bg-gray-900 dark:bg-gray-900 text-black py-6 rounded-t-lg md:px-8  items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium dark:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+          <CardHeader className="bg-gray-900 text-white py-6 rounded-t-lg md:px-8  items-center justify-center border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
             <div className="flex items-center justify-between">
               <CardTitle className="text-2xl font-bold">YouNotes</CardTitle>
             </div>
@@ -339,7 +338,7 @@ export default function Home() {
                   value={transcript}
                   onChange={handleTranscriptChange}
                   placeholder="Enter the transcript text here..."
-                  className="w-full border border-gray-800 bg-gray-800 dark:bg-gray-950/50 dark:text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-800/50 focus:border-transparent"
+                  className="w-full border border-gray-800 bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
                 />
                 <div className="flex justify-between items-center mt-4">
                   <p className="text-sm text-gray-500">
@@ -378,7 +377,7 @@ export default function Home() {
                   value={youtubeUrl}
                   onChange={handleYoutubeUrlChange}
                   placeholder="Enter the YouTube URL here..."
-                  className="w-full bg-gray-100 border border-gray-800 dark:bg-gray-950/50 dark:text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-800/50 focus:border-transparent"
+                  className="w-full bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
                 />
                 <div className="flex justify-end mt-4">
                   <button onClick={() => handleGenerateNotes('youtube')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
@@ -445,7 +444,7 @@ export default function Home() {
                     <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
                   </button>
                 </div>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} className="prose max-w-none">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} className="prose prose-invert max-w-none">
                   {notes}
                 </ReactMarkdown>
               </div>
@@ -453,23 +452,26 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-      <AnimatedTabs/>
+      <AnimatedTabs />
       <BentoGrid className="max-w-4xl mx-auto mt-20">
-      {items.map((item, i) => (
-        <BentoGridItem
-          key={i}
-          title={item.title}
-          description={item.description}
-          header={item.header}
-          icon={item.icon}
-          className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+        {items.map((item, i) => (
+          <BentoGridItem
+            key={i}
+            title={item.title}
+            description={item.description}
+            header={item.header}
+            icon={item.icon}
+            className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+          />
+        ))}
+      </BentoGrid>
+      <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
+        <InfiniteMovingCards
+          items={testimonials}
+          direction="right"
+          speed="slow"
         />
-      ))}
-    </BentoGrid>
-    <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
-        
       </div>
     </>
   );
-  
 }

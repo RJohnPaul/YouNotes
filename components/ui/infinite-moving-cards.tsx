@@ -131,7 +131,7 @@ export const InfiniteMovingCards: React.FC<InfiniteMovingCardsProps> = ({
             className="w-[350px] max-w-full relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-700 px-8 py-6 md:w-[450px]"
             style={{
               background:
-                "linear-gradient(360deg, var(--gray-900), var(--black))",
+                "linear-gradient(360deg, var(--black), var(--black))",
             }}
             key={item.name}
           >
