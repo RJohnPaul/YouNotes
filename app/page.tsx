@@ -16,6 +16,7 @@ import { Highlight } from "@/components/ui/hero-highlight";
 import { motion } from "framer-motion";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid";
+import { footer } from "../components/component/footer"
 import {
   IconClipboardCopy,
   IconFileBroken,
@@ -240,29 +241,29 @@ export default function Home() {
 
   const testimonials = [
     {
-      quote: "YouNotes has revolutionized the way we share information. It's so easy to create QR codes for our website and products. Our customers love it!",
-      name: "John Miller",
-      title: "Marketing Manager",
+      quote: "YouNotes has transformed my study habits. I can now quickly generate concise notes from lengthy lecture videos on YouTube. It's a game-changer for online learning!",
+      name: "Emily Chen",
+      title: "University Student",
     },
     {
-      quote: "I've been using YouNotes for my personal brand, and it has made sharing my contact information and social media profiles a breeze. Highly recommended!",
-      name: "Jane Smith",
-      title: "Influencer",
+      quote: "As a researcher, I often work with long interview transcripts. YouNotes helps me distill key points effortlessly, saving me hours of manual note-taking.",
+      name: "Dr. James Wilson",
+      title: "Academic Researcher",
     },
     {
-      quote: "YouNotes has been a game-changer for our events. We can now easily share event details and registrations with our attendees. It's a must-have tool!",
-      name: "Mark Johnson",
-      title: "Event Organizer",
+      quote: "YouNotes has been invaluable for our content team. We can quickly summarize webinars and podcasts, making it easier to create derivative content. It's boosted our productivity significantly!",
+      name: "Sofia Rodriguez",
+      title: "Content Marketing Manager",
     },
     {
-      quote: "As a small business owner, YouNotes has helped me streamline my operations. I can now quickly generate QR codes for my products and promotions!",
-      name: "Sarah Davis",
-      title: "Entrepreneur",
+      quote: "I use YouNotes to keep up with industry talks and conferences. It allows me to extract the most important information from hours of video content. An essential tool for continuous learning!",
+      name: "Alex Patel",
+      title: "Software Engineer",
     },
     {
-      quote: "YouNotes is an essential tool for anyone looking to enhance their digital presence. The ability to create custom QR codes has opened up new possibilities!",
-      name: "Michael Brown",
-      title: "Digital Marketer",
+      quote: "As a journalist, I often need to review long interviews. YouNotes helps me quickly generate summaries, allowing me to focus on crafting compelling stories. It's become an indispensable part of my workflow.",
+      name: "Laura Thompson",
+      title: "Investigative Journalist",
     },
   ];
 
@@ -469,6 +470,9 @@ export default function Home() {
           speed="slow"
         />
       </div>
+    </div>
+    <div className="mt-40">
+     {footer()}
     </div>
     </>
   );
