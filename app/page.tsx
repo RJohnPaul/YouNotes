@@ -5,7 +5,6 @@ import { supabase } from './supabaseClient';
 import { Spotlight } from "@/components/Spotlight";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Progress } from "@/components/ui/progress";
 import ReactMarkdown from 'react-markdown';
 import { AnimatedTabs } from "@/components/ui/animated-tabs";
@@ -16,9 +15,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Highlight } from "@/components/ui/hero-highlight";
 import { motion } from "framer-motion";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-import AuthForm from "./AuthForm";
-import Image from "next/image";
-import { cn } from "@/utils/cn";
 import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid";
 import {
   IconClipboardCopy,
@@ -279,6 +275,7 @@ export default function Home() {
 
   return (
     <>
+    <div className="bg-black">
       <div className="fixed top-0 right-0 m-4 z-50">
         <div className="flex items-center space-x-4">
           <span className="text-sm font-medium text-gray-300">
@@ -292,7 +289,7 @@ export default function Home() {
           </button>
         </div>
       </div>
-
+     
       <div className="mt-20 mb-20">
         <motion.h1
           initial={{
@@ -453,7 +450,7 @@ export default function Home() {
         </Card>
       </div>
       <AnimatedTabs />
-      <BentoGrid className="max-w-4xl mx-auto mt-20">
+      <BentoGrid className="max-w-7xl mx-auto mt-20">
         {items.map((item, i) => (
           <BentoGridItem
             key={i}
@@ -472,6 +469,7 @@ export default function Home() {
           speed="slow"
         />
       </div>
+    </div>
     </>
   );
 }
