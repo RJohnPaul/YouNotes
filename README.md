@@ -1,7 +1,7 @@
 # YouNotes
 
 <p align="center">
-  <img src="https://github.com/RJohnPaul/YouNotes/blob/73d8bb4c2994cb90a1f479e8173db640a03ba4cd/meow%20(1).png" alt="YouNotes Logo"/>
+  <img src="https://github.com/RJohnPaul/YouNotes/blob/5e595040461c6eb18b2ddbbe847dc7c432269d41/Bento-Grid.png" alt="YouNotes Logo"/>
 </p>
 
 
