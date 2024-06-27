@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { motion } from "framer-motion";
+import React from "react";
 import { RefObject, useEffect, useId, useState } from "react";
 
 export interface AnimatedBeamProps {
