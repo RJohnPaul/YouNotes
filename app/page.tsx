@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid";
 import { footer } from "../components/component/footer"
+import AuthForm from "./AuthForm";
 import {
   IconClipboardCopy,
   IconFileBroken,
@@ -268,11 +269,11 @@ export default function Home() {
   ];
 
     
- // if (!session) {
- //   return (
-   //     <AuthForm />
- //   );
- // }
+  if (!session) {
+    return (
+        <AuthForm />
+    );
+  }
 
   return (
     <>

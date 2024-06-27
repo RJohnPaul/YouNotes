@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
-import { cn } from "@/utils/cn";
+import { cn } from "../utils/cn";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
