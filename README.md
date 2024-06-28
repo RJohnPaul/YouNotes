@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/RJohnPaul/YouNotes/blob/5e595040461c6eb18b2ddbbe847dc7c432269d41/Bento-Grid.png" alt="YouNotes Logo"/>
+  <img src="https://github.com/RJohnPaul/YouNotes/blob/67253a9687c34fc289b2898b3338b49ad80312a1/younotes.png" alt="YouNotes Logo"/>
 </p>
 
 ## Younotes
