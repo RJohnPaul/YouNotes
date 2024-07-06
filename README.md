@@ -1,14 +1,8 @@
-# YouNotes
-
 <p align="center">
-  <img src="https://github.com/RJohnPaul/YouNotes/blob/73d8bb4c2994cb90a1f479e8173db640a03ba4cd/meow%20(1).png" alt="YouNotes Logo"/>
+  <img src="https://github.com/RJohnPaul/YouNotes/blob/67253a9687c34fc289b2898b3338b49ad80312a1/younotes.png" alt="YouNotes Logo"/>
 </p>
 
-<p align="center">
-  <img src="https://github.com/RJohnPaul/YouNotes/blob/b741cd5dc5cf85613a016839d413fa60b2116090/ezgif-2-3c2c970717%20(2).gif" alt="YouNotes Logo"/>
-</p>
-
-
+## Younotes
 
 YouNotes is an AI-powered tool that automatically generates concise, well-structured notes from YouTube videos and text transcripts. Transform hours of content into digestible summaries with just a click!
 
