@@ -38,6 +38,7 @@ import {
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_API_KEY);
 
 const MAX_TOKENS = 1000;
+const MAX_FREE_USES = 2;
 
 export default function Home() {
   const [transcript, setTranscript] = useState('');
@@ -50,8 +51,14 @@ export default function Home() {
   const { toast } = useToast();
   const [session, setSession] = useState<Session | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [useCount, setUseCount] = useState(0);
 
   useEffect(() => {
+    const storedCount = localStorage.getItem('useCount');
+    if (storedCount) {
+      setUseCount(parseInt(storedCount, 10));
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
@@ -91,6 +98,12 @@ export default function Home() {
     }
   }, [loading]);
 
+  const incrementUseCount = () => {
+    const newCount = useCount + 1;
+    setUseCount(newCount);
+    localStorage.setItem('useCount', newCount.toString());
+  };
+
   const handleTranscriptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setTranscript(value);
@@ -103,6 +116,15 @@ export default function Home() {
   };
 
   const handleGenerateNotes = async (source: 'transcript' | 'youtube') => {
+    if (!session && useCount >= MAX_FREE_USES) {
+      toast({
+        title: 'Free uses exceeded',
+        description: 'Please log in to continue using this feature.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (source === 'transcript' && remainingTokens < 0) {
       toast({
         title: 'Token limit exceeded',
@@ -153,6 +175,7 @@ export default function Home() {
       const response = await result.response;
       const text = await response.text();
 
+      incrementUseCount();
       setNotes(text.trim());
       setTranscript('');
       setYoutubeUrl('');
@@ -190,10 +213,6 @@ export default function Home() {
     setSession(null);
     setUserName(null);
   };
-
-  const Skeleton = () => (
-    <div className="flex flex-1 w-full h-full min-h-[6rem] rounded-xl bg-gradient-to-br from-neutral-900 to-neutral-800"></div>
-  );
 
   const items = [
     {
@@ -268,213 +287,211 @@ export default function Home() {
     },
   ];
 
-    
-  if (!session) {
-    return (
-        <AuthForm />
-    );
+  if (!session && useCount >= MAX_FREE_USES) {
+    return <AuthForm />;
   }
 
   return (
     <>
-    <div className="bg-black">
-      <div className="fixed top-0 right-0 m-4 z-50">
-        <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-gray-300">
-            {userName}
-          </span>
-          <button
-            onClick={handleSignOut}
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+      <div className="bg-black">
+        <div className="fixed top-0 right-0 m-4 z-50">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-300">
+              {userName}
+            </span>
+            <button
+              onClick={handleSignOut}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-20 mb-20">
+          <motion.h1
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+            animate={{
+              opacity: 1,
+              y: [20, -5, 0],
+            }}
+            transition={{
+              duration: 0.2,
+              ease: [0.4, 0.0, 0.2, 1],
+            }}
+            className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
           >
-            Sign Out
-          </button>
+            With YouNotes, Everything is possible . Everything
+            is{" "}
+            <Highlight className="text-white">
+              A&nbsp;Click&nbsp;Away.
+            </Highlight>
+          </motion.h1>
+        </div>
+        <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
+          <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="green" />
+          <Card className="w-full max-w-3xl shadow-lg rounded-lg">
+            <CardHeader className="bg-gray-900 text-white py-6 rounded-t-lg md:px-8  items-center justify-center border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl font-bold">YouNotes</CardTitle>
+              </div>
+              <CardDescription className="text-gray-400 mt-2">
+                Generate notes from a transcript or YouTube video.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 md:p-8 lg:p-10 space-y-6 bg-black shadow-2xl shadow-emerald-500/40">
+              <Tabs defaultValue="transcript" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="transcript">Transcript</TabsTrigger>
+                  <TabsTrigger value="youtube">YouTube</TabsTrigger>
+                </TabsList>
+                <TabsContent value="transcript">
+                  <Textarea
+                    value={transcript}
+                    onChange={handleTranscriptChange}
+                    placeholder="Enter the transcript text here..."
+                    className="w-full border border-gray-800 bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
+                  />
+                  <div className="flex justify-between items-center mt-4">
+                    <p className="text-sm text-gray-500">
+                      Remaining Tokens: {remainingTokens} / {MAX_TOKENS}
+                    </p>
+                    <button onClick={() => handleGenerateNotes('transcript')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
+                      <span className="absolute inset-0 overflow-hidden rounded-lg">
+                        <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      </span>
+                      <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
+                        <span>
+                          Generate
+                        </span>
+                        <svg
+                          fill="none"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10.75 8.75L14.25 12L10.75 15.25"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                          />
+                        </svg>
+                      </div>
+                      <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+                    </button>
+                  </div>
+                </TabsContent>
+                <TabsContent value="youtube">
+                  <input
+                    value={youtubeUrl}
+                    onChange={handleYoutubeUrlChange}
+                    placeholder="Enter the YouTube URL here..."
+                    className="w-full bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
+                  />
+                  <div className="flex justify-end mt-4">
+                    <button onClick={() => handleGenerateNotes('youtube')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
+                      <span className="absolute inset-0 overflow-hidden rounded-lg">
+                        <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      </span>
+                      <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
+                        <span>
+                          Generate
+                        </span>
+                        <svg
+                          fill="none"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10.75 8.75L14.25 12L10.75 15.25"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                          />
+                        </svg>
+                      </div>
+                      <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+                    </button>
+                  </div>
+                </TabsContent>
+              </Tabs>
+              {loading && (
+                <div className="mt-4">
+                  <Progress value={progress} />
+                </div>
+              )}
+              {notes && (
+                <div className="mt-8 p-6 md:p-8 lg:p-6 space-y-6 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Generated Notes</h3>
+                    <button onClick={copyToClipboard} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block">
+                      <span className="absolute inset-0 overflow-hidden rounded-full">
+                        <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      </span>
+                      <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10">
+                        <span>
+                          {copied ? 'Copied!' : 'Copy'}
+                        </span>
+                        <svg
+                          fill="none"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10.75 8.75L14.25 12L10.75 15.25"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                          />
+                        </svg>
+                      </div>
+                      <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+                    </button>
+                  </div>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} className="prose prose-invert max-w-none">
+                    {notes}
+                  </ReactMarkdown>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+        <AnimatedTabs />
+        <BentoGrid className="max-w-7xl mx-auto mt-20">
+          {items.map((item, i) => (
+            <BentoGridItem
+              key={i}
+              title={item.title}
+              description={item.description}
+              header={item.header}
+              icon={item.icon}
+              className={i === 3 || i === 6 ? "md:col-span-2" : ""}
+            />
+          ))}
+        </BentoGrid>
+        <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
+          <InfiniteMovingCards
+            items={testimonials}
+            direction="right"
+            speed="slow"
+          />
         </div>
       </div>
-     
-      <div className="mt-20 mb-20">
-        <motion.h1
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: [20, -5, 0],
-          }}
-          transition={{
-            duration: 0.2,
-            ease: [0.4, 0.0, 0.2, 1],
-          }}
-          className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
-        >
-          With YouNotes, Everything is possible . Everything
-          is{" "}
-          <Highlight className="text-white">
-            A&nbsp;Click&nbsp;Away.
-          </Highlight>
-        </motion.h1>
+      <div className="mt-40">
+        {footer()}
       </div>
-      <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
-        <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="green" />
-        <Card className="w-full max-w-3xl shadow-lg rounded-lg">
-          <CardHeader className="bg-gray-900 text-white py-6 rounded-t-lg md:px-8  items-center justify-center border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl font-bold">YouNotes</CardTitle>
-            </div>
-            <CardDescription className="text-gray-400 mt-2">
-              Generate notes from a transcript or YouTube video.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-6 md:p-8 lg:p-10 space-y-6 bg-black shadow-2xl shadow-emerald-500/40">
-            <Tabs defaultValue="transcript" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="transcript">Transcript</TabsTrigger>
-                <TabsTrigger value="youtube">YouTube</TabsTrigger>
-              </TabsList>
-              <TabsContent value="transcript">
-                <Textarea
-                  value={transcript}
-                  onChange={handleTranscriptChange}
-                  placeholder="Enter the transcript text here..."
-                  className="w-full border border-gray-800 bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
-                />
-                <div className="flex justify-between items-center mt-4">
-                  <p className="text-sm text-gray-500">
-                    Remaining Tokens: {remainingTokens} / {MAX_TOKENS}
-                  </p>
-                  <button onClick={() => handleGenerateNotes('transcript')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
-                    <span className="absolute inset-0 overflow-hidden rounded-lg">
-                      <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    </span>
-                    <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-                      <span>
-                        Generate
-                      </span>
-                      <svg
-                        fill="none"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        width="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10.75 8.75L14.25 12L10.75 15.25"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                        />
-                      </svg>
-                    </div>
-                    <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
-                  </button>
-                </div>
-              </TabsContent>
-              <TabsContent value="youtube">
-                <input
-                  value={youtubeUrl}
-                  onChange={handleYoutubeUrlChange}
-                  placeholder="Enter the YouTube URL here..."
-                  className="w-full bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
-                />
-                <div className="flex justify-end mt-4">
-                  <button onClick={() => handleGenerateNotes('youtube')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
-                    <span className="absolute inset-0 overflow-hidden rounded-lg">
-                      <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    </span>
-                    <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-                      <span>
-                        Generate
-                      </span>
-                      <svg
-                        fill="none"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        width="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10.75 8.75L14.25 12L10.75 15.25"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                        />
-                      </svg>
-                    </div>
-                    <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
-                  </button>
-                </div>
-              </TabsContent>
-            </Tabs>
-            {loading && (
-              <div className="mt-4">
-                <Progress value={progress} />
-              </div>
-            )}
-            {notes && (
-              <div className="mt-8 p-6 md:p-8 lg:p-6 space-y-6 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-                <div className="flex justify-between items-center mb-4"><h3 className="text-lg font-semibold">Generated Notes</h3>
-                  <button onClick={copyToClipboard} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block">
-                    <span className="absolute inset-0 overflow-hidden rounded-full">
-                      <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    </span>
-                    <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10">
-                      <span>
-                        {copied ? 'Copied!' : 'Copy'}
-                      </span>
-                      <svg
-                        fill="none"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        width="16"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10.75 8.75L14.25 12L10.75 15.25"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                        />
-                      </svg>
-                    </div>
-                    <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
-                  </button>
-                </div>
-                <ReactMarkdown remarkPlugins={[remarkGfm]} className="prose prose-invert max-w-none">
-                  {notes}
-                </ReactMarkdown>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-      <AnimatedTabs />
-      <BentoGrid className="max-w-7xl mx-auto mt-20">
-        {items.map((item, i) => (
-          <BentoGridItem
-            key={i}
-            title={item.title}
-            description={item.description}
-            header={item.header}
-            icon={item.icon}
-            className={i === 3 || i === 6 ? "md:col-span-2" : ""}
-          />
-        ))}
-      </BentoGrid>
-      <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
-        <InfiniteMovingCards
-          items={testimonials}
-          direction="right"
-          speed="slow"
-        />
-      </div>
-    </div>
-    <div className="mt-40">
-     {footer()}
-    </div>
     </>
   );
 }
