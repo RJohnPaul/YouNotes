@@ -262,7 +262,7 @@ export default function Home() {
   const testimonials = [
     {
       quote: "YouNotes has transformed my study habits. I can now quickly generate concise notes from lengthy lecture videos on YouTube. It's a game-changer for online learning!",
-      name: "Emily Chen",
+      name: "Emily Wong",
       title: "University Student",
     },
     {
