@@ -216,7 +216,7 @@ export default function Home() {
 
   const items = [
     {
-      title: "Effortless Note-Taking",
+      title: "Easy Note-Taking",
       description: "Transform YouTube videos and transcripts into concise notes with ease.",
       header: <IconNote className="h-8 w-8 text-blue-500" />,
       icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
