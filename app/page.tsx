@@ -267,7 +267,7 @@ export default function Home() {
     },
     {
       quote: "As a researcher, I often work with long interview transcripts. YouNotes helps me distill key points effortlessly, saving me hours of manual note-taking.",
-      name: "Dr. James Wilson",
+      name: "Dr.James Wilson",
       title: "Academic Researcher",
     },
     {
