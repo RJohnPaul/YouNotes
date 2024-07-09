@@ -234,7 +234,7 @@ export default function Home() {
       icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
     },
     {
-      title: "Time-Saving Solution",
+      title: "Time-Saving",
       description: "Save hours of manual note-taking with our automated system.",
       header: <IconClock className="h-8 w-8 text-red-500" />,
       icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
