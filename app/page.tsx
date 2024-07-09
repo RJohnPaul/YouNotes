@@ -222,7 +222,7 @@ export default function Home() {
       icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
     },
     {
-      title: "AI-Powered Summarization",
+      title: "AI-Powered Goodness",
       description: "Harness the power of AI to create accurate and meaningful summaries.",
       header: <IconBrain className="h-8 w-8 text-purple-500" />,
       icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
