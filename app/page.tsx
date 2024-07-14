@@ -119,7 +119,7 @@ export default function Home() {
     if (!session && useCount >= MAX_FREE_USES) {
       toast({
         title: 'Free uses are over',
-        description: 'Please log in to continue',
+        description: 'Please log in to continue to use',
         variant: 'destructive',
       });
       return;
