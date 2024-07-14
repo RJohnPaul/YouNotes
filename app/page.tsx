@@ -118,7 +118,7 @@ export default function Home() {
   const handleGenerateNotes = async (source: 'transcript' | 'youtube') => {
     if (!session && useCount >= MAX_FREE_USES) {
       toast({
-        title: 'Free uses exceeded',
+        title: 'Free uses are over',
         description: 'Please log in to continue using this feature.',
         variant: 'destructive',
       });
