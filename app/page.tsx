@@ -127,7 +127,7 @@ export default function Home() {
 
     if (source === 'transcript' && remainingTokens < 0) {
       toast({
-        title: 'Token limit ',
+        title: 'Token limit over',
         description: 'You have exceeded the maximum token limit. Please reduce the transcript length.',
         variant: 'destructive',
       });
