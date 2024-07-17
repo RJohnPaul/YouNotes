@@ -6,6 +6,8 @@ import { cn } from "../utils/cn";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { useToast } from "../components/ui/use-toast";
+import { Toaster } from "../components/ui/toaster";
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -18,8 +20,8 @@ export function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -38,18 +40,32 @@ export function AuthForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
+        toast({
+          title: "Sign Up Successful",
+          description: `A magic link has been sent to ${email}. Please check your email to verify your account.`,
+          duration: 10000,
+        });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        toast({
+          title: "Sign In Successful",
+          description: "You have been successfully signed in.",
+          duration: 3000,
+        });
       }
     } catch (error: any) {
-      setError(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -57,7 +73,6 @@ export function AuthForm() {
 
   const handleGitHubLogin = async () => {
     setLoading(true);
-    setError(null);
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -65,7 +80,12 @@ export function AuthForm() {
       });
       if (error) throw error;
     } catch (error: any) {
-      setError(error.message);
+      toast({
+        title: "GitHub Login Error",
+        description: error.message,
+        variant: "destructive",
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -82,10 +102,6 @@ export function AuthForm() {
             ? "Create your account to start using YouNotes"
             : "Welcome back! Sign in to access your notes"}
         </p>
-
-        {error && (
-          <p className="text-red-500 text-sm text-center mt-4">{error}</p>
-        )}
 
         <form className="my-8" onSubmit={handleSubmit}>
           <LabelInputContainer className="mb-4">
@@ -146,6 +162,7 @@ export function AuthForm() {
           </button>
         </p>
       </div>
+      <Toaster />
     </div>
   );
 }

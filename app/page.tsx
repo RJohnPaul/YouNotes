@@ -52,6 +52,7 @@ export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const [useCount, setUseCount] = useState(0);
+  const [showAuthForm, setShowAuthForm] = useState(false);
 
   useEffect(() => {
     const storedCount = localStorage.getItem('useCount');
@@ -118,10 +119,11 @@ export default function Home() {
   const handleGenerateNotes = async (source: 'transcript' | 'youtube') => {
     if (!session && useCount >= MAX_FREE_USES) {
       toast({
-        title: 'Free uses are over',
-        description: 'Please log in to continue to use',
+        title: 'Free use limit exceeded',
+        description: 'Please register to continue using the service.',
         variant: 'destructive',
       });
+      setShowAuthForm(true);
       return;
     }
 
@@ -287,54 +289,47 @@ export default function Home() {
     },
   ];
 
-  if (!session && useCount >= MAX_FREE_USES) {
+  if (showAuthForm) {
     return <AuthForm />;
   }
 
   return (
     <>
-      <div className="bg-black">
-        <div className="fixed top-0 right-0 m-4 z-50">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-300">
-              {userName}
-            </span>
-            <button
-              onClick={handleSignOut}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-            >
-              Sign Out
-            </button>
+      <div className="bg-black min-h-screen">
+        {session && (
+          <div className="fixed top-0 right-0 m-4 z-50">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-300">
+                {userName}
+              </span>
+              <button
+                onClick={handleSignOut}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="mt-20 mb-20">
+        <div className="pt-20 pb-10">
           <motion.h1
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: [20, -5, 0],
-            }}
-            transition={{
-              duration: 0.2,
-              ease: [0.4, 0.0, 0.2, 1],
-            }}
-            className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto "
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: [20, -5, 0] }}
+            transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
+            className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto"
           >
-            With YouNotes, Everything is possible . Everything
-            is{" "}
+            With YouNotes, Everything is possible. Everything is{" "}
             <Highlight className="text-white">
               A&nbsp;Click&nbsp;Away.
             </Highlight>
           </motion.h1>
         </div>
-        <div className="flex justify-center items-center py-12 md:py-16 lg:py-20 px-4 md:px-6 lg:px-8">
+
+        <div className="flex justify-center items-center py-12 px-4 md:px-6 lg:px-8">
           <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="green" />
           <Card className="w-full max-w-3xl shadow-lg rounded-lg">
-            <CardHeader className="bg-gray-900 text-white py-6 rounded-t-lg md:px-8  items-center justify-center border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+            <CardHeader className="bg-gray-900 text-white py-6 rounded-t-lg md:px-8 items-center justify-center border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl font-bold">YouNotes</CardTitle>
               </div>
@@ -357,8 +352,7 @@ export default function Home() {
                   />
                   <div className="flex justify-between items-center mt-4">
                     <p className="text-sm text-gray-500">
-                      Remaining Tokens: {remainingTokens} / {MAX_TOKENS}
-                    </p>
+                      Remaining Tokens: {remainingTokens} / {MAX_TOKENS}</p>
                     <button onClick={() => handleGenerateNotes('transcript')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
                       <span className="absolute inset-0 overflow-hidden rounded-lg">
                         <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -468,8 +462,10 @@ export default function Home() {
             </CardContent>
           </Card>
         </div>
+
         <AnimatedTabs />
-        <BentoGrid className="max-w-7xl mx-auto mt-20">
+
+        <BentoGrid className="max-w-7xl mx-auto mt-20 px-4">
           {items.map((item, i) => (
             <BentoGridItem
               key={i}
@@ -481,6 +477,7 @@ export default function Home() {
             />
           ))}
         </BentoGrid>
+
         <div className="mt-20 rounded-md flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
           <InfiniteMovingCards
             items={testimonials}
