@@ -279,12 +279,12 @@ export default function Home() {
     },
     {
       quote: "I use YouNotes to keep up with industry talks and conferences. It allows me to extract the most important information from hours of video content. An essential tool for continuous learning!",
-      name: "Alex Patel",
+      name: "James Patel",
       title: "Software Engineer",
     },
     {
       quote: "As a journalist, I often need to review long interviews. YouNotes helps me quickly generate summaries, allowing me to focus on crafting compelling stories. It's become an indispensable part of my workflow.",
-      name: "Laura Thompson",
+      name: "Laurel Thompson",
       title: "Investigative Journalist",
     },
   ];
