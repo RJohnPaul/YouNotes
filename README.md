@@ -17,7 +17,7 @@ YouNotes is an AI-powered tool that automatically generates concise, well-struct
 
 ## Demo
 
-[Link to live demo-](https://you-notes-rouge.vercel.app/)
+[Click Here](https://you-notes-rouge.vercel.app/)
 
 ## Tech Stack
 
