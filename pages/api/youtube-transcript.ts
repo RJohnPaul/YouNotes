@@ -19,7 +19,7 @@ const fetchWithRetry = async (url: string, retries = 3, delay = 1000) => {
     } catch (error) {
       if (i < retries - 1) {
         console.warn(`Retrying... (${i + 1}/${retries})`);
-        await new Promise((resolve) => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay * (i + 1)));
       } else {
         throw error;
       }
@@ -44,22 +44,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Combine all transcript parts into a single string
-      const fullText = (transcript as { text: string }[]).map((part) => part.text).join(' ');
+      const fullText = transcript.map((part) => part.text).join(' ');
 
       res.status(200).json({ transcript: fullText });
     } catch (error) {
-      console.error('Error fetching transcript:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : null,
-        details: error,
-      });
+      console.error('Error fetching transcript:', error);
 
       if (error instanceof Error && error.message === 'Request timed out') {
         res.status(504).json({ error: 'The request timed out. Please try again later.' });
       } else if (error instanceof Error && (error.message.includes('network') || error.message.includes('ECONNRESET'))) {
         res.status(502).json({ error: 'Bad Gateway. Please try again later.' });
+      } else if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
       } else {
-        res.status(500).json({ error: 'An error occurred while fetching the transcript' });
+        res.status(500).json({ error: 'An unknown error occurred' });
       }
     }
   } else {
