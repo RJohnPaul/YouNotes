@@ -1,5 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { YoutubeTranscript } from 'youtube-transcript';
+import { getSubtitles } from 'youtube-captions-scraper';
+
+// Simple helper to extract video ID from a typical YouTube URL
+function getYouTubeVideoId(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    // ?v=xxxx or short URLs
+    const videoID = parsed.searchParams.get('v');
+    if (videoID) return videoID;
+
+    // Handle youtu.be/xxxx short links
+    if (parsed.hostname === 'youtu.be') {
+      return parsed.pathname.replace('/', '');
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -7,25 +25,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const { url } = req.body;
+  // Allow users to pass in a preferred language; default to 'en' if not provided
+  const { url, lang = 'en' } = req.body;
   if (!url) {
     return res.status(400).json({ error: 'No URL provided' });
   }
 
   try {
-    // Fetch transcript
-    const transcript = await YoutubeTranscript.fetchTranscript(url);
+    const videoID = getYouTubeVideoId(url);
+    if (!videoID) {
+      throw new Error('Could not determine YouTube video ID from the URL');
+    }
 
-    if (!transcript || transcript.length === 0) {
-      throw new Error('Transcript is empty or could not be fetched');
+    // Attempt to fetch subtitles with the specified or default language
+    let subtitles = await getSubtitles({ videoID, lang });
+
+    // If no subtitles found, try also the default 'en' to see if at least English tracks are available
+    if ((!subtitles || subtitles.length === 0) && lang !== 'en') {
+      subtitles = await getSubtitles({ videoID, lang: 'en' });
+    }
+
+    if (!subtitles || subtitles.length === 0) {
+      throw new Error('Transcript is empty or could not be fetched. Try a different language.');
     }
 
     // Merge transcript parts into a single string
-    const fullText = transcript.map(part => part.text).join(' ');
+    const fullText = subtitles.map((part) => part.text).join(' ');
     return res.status(200).json({ transcript: fullText });
   } catch (error) {
     console.error('Error in transcript API:', error);
 
+    // Basic error checks (timeouts, network issues, etc.) may vary by environment
     if (error instanceof Error && error.message === 'Request timed out') {
       return res.status(504).json({ error: 'Request timed out. Try again later.' });
     }

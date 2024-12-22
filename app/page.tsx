@@ -14,7 +14,7 @@ import { Highlight } from "@/components/ui/hero-highlight";
 import { motion } from "framer-motion";
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 import { BentoGrid, BentoGridItem } from "../components/ui/bento-grid";
-import { footer } from "../components/component/footer"
+import { footer } from "../components/component/footer";
 import {
   IconClipboardCopy,
   IconFileBroken,
@@ -39,6 +39,7 @@ const MAX_TOKENS = 1000;
 export default function Home() {
   const [transcript, setTranscript] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [language, setLanguage] = useState('en');
   const [notes, setNotes] = useState('');
   const [remainingTokens, setRemainingTokens] = useState(MAX_TOKENS);
   const [copied, setCopied] = useState(false);
@@ -57,7 +58,6 @@ export default function Home() {
           return prevProgress + 1;
         });
       }, 50);
-
       return () => {
         clearInterval(timer);
       };
@@ -73,6 +73,10 @@ export default function Home() {
 
   const handleYoutubeUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setYoutubeUrl(e.target.value);
+  };
+
+  const handleLanguageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLanguage(e.target.value);
   };
 
   const handleGenerateNotes = async (source: 'transcript' | 'youtube') => {
@@ -92,20 +96,19 @@ export default function Home() {
       let textToProcess = '';
 
       if (source === 'youtube') {
-        // Fetch transcript from your custom API
         const response = await fetch('/api/youtube-transcript', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ url: youtubeUrl }),
+          body: JSON.stringify({ url: youtubeUrl, lang: language }),
         });
 
+        const result = await response.json();
         if (response.ok) {
-          const result = await response.json();
           textToProcess = result.transcript;
         } else {
-          throw new Error('Failed to fetch YouTube transcript');
+          throw new Error(result.error || 'Failed to fetch YouTube transcript');
         }
       } else {
         textToProcess = transcript;
@@ -113,14 +116,14 @@ export default function Home() {
 
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = `Please generate notes from the following transcript:\n\n${textToProcess}`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = await response.text();
+      const apiResult = await model.generateContent(prompt);
+      const aiResponse = await apiResult.response;
+      const text = await aiResponse.text();
 
       setNotes(text.trim());
       setTranscript('');
       setYoutubeUrl('');
+      setLanguage('en');
       setRemainingTokens(MAX_TOKENS);
       setLoading(false);
       toast({
@@ -257,6 +260,7 @@ export default function Home() {
                   <TabsTrigger value="transcript">Transcript</TabsTrigger>
                   <TabsTrigger value="youtube">YouTube</TabsTrigger>
                 </TabsList>
+
                 <TabsContent value="transcript">
                   <Textarea
                     value={transcript}
@@ -268,14 +272,15 @@ export default function Home() {
                     <p className="text-sm text-gray-500">
                       Remaining Tokens: {remainingTokens} / {MAX_TOKENS}
                     </p>
-                    <button onClick={() => handleGenerateNotes('transcript')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
+                    <button
+                      onClick={() => handleGenerateNotes('transcript')}
+                      className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6 text-white inline-block"
+                    >
                       <span className="absolute inset-0 overflow-hidden rounded-lg">
                         <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                       </span>
-                      <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-                        <span>
-                          Generate
-                        </span>
+                      <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10">
+                        <span>Generate</span>
                         <svg
                           fill="none"
                           height="16"
@@ -296,6 +301,7 @@ export default function Home() {
                     </button>
                   </div>
                 </TabsContent>
+
                 <TabsContent value="youtube">
                   <input
                     value={youtubeUrl}
@@ -303,15 +309,52 @@ export default function Home() {
                     placeholder="Enter the YouTube URL here..."
                     className="w-full bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent"
                   />
-                  <div className="flex justify-end mt-4">
-                    <button onClick={() => handleGenerateNotes('youtube')} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6  text-white inline-block">
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-4 space-y-4 md:space-y-0 md:space-x-4">
+                    <select
+                      value={language}
+                      onChange={handleLanguageSelect}
+                      className="bg-gray-950/50 text-gray-200 rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-gray-800/50 focus:border-transparent w-full md:w-auto"
+                    >
+                      <option value="en">English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                      <option value="it">Italian</option>
+                      <option value="pt">Portuguese</option>
+                      <option value="ru">Russian</option>
+                      <option value="zh">Chinese</option>
+                      <option value="ja">Japanese</option>
+                      <option value="ko">Korean</option>
+                      <option value="ar">Arabic</option>
+                      <option value="hi">Hindi</option>
+                      <option value="ta">Tamil</option>
+                      <option value="te">Telugu</option>
+                      <option value="ml">Malayalam</option>
+                      <option value="bn">Bengali</option>
+                      <option value="gu">Gujarati</option>
+                      <option value="mr">Marathi</option>
+                      <option value="ur">Urdu</option>
+                      <option value="pa">Punjabi</option>
+                      <option value="fa">Persian</option>
+                      <option value="tr">Turkish</option>
+                      <option value="th">Thai</option>
+                      <option value="vi">Vietnamese</option>
+                      <option value="id">Indonesian</option>
+                      <option value="ms">Malay</option>
+                      <option value="fil">Filipino</option>
+                      <option value="sw">Swahili</option>
+                      <option value="am">Amharic</option>
+                    </select>
+
+                    <button
+                      onClick={() => handleGenerateNotes('youtube')}
+                      className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-lg p-px text-xs font-semibold leading-6 text-white inline-block"
+                    >
                       <span className="absolute inset-0 overflow-hidden rounded-lg">
                         <span className="absolute inset-0 rounded-lg bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                       </span>
-                      <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-                        <span>
-                          Generate
-                        </span>
+                      <div className="relative flex space-x-2 items-center z-10 rounded-lg bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10">
+                        <span>Generate</span>
                         <svg
                           fill="none"
                           height="16"
@@ -333,6 +376,7 @@ export default function Home() {
                   </div>
                 </TabsContent>
               </Tabs>
+
               {loading && (
                 <div className="mt-4">
                   <Progress value={progress} />
@@ -342,14 +386,15 @@ export default function Home() {
                 <div className="mt-8 p-6 md:p-8 lg:p-6 space-y-6 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">Generated Notes</h3>
-                    <button onClick={copyToClipboard} className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block">
+                    <button
+                      onClick={copyToClipboard}
+                      className="bg-slate-800 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6 text-white inline-block"
+                    >
                       <span className="absolute inset-0 overflow-hidden rounded-full">
                         <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                       </span>
                       <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10">
-                        <span>
-                          {copied ? 'Copied!' : 'Copy'}
-                        </span>
+                        <span>{copied ? 'Copied!' : 'Copy'}</span>
                         <svg
                           fill="none"
                           height="16"
@@ -407,9 +452,3 @@ export default function Home() {
     </>
   );
 }
-
-
-
-
-
-

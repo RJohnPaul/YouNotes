@@ -46,6 +46,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.165.0",
     "three-globe": "^2.31.1",
+    "youtube-captions-scraper": "^2.0.3",
     "youtube-transcript": "^1.2.1",
     "youtube-transcript-api": "^1.1.2"
   },
@@ -53,6 +54,7 @@
     "@types/node": "^20.14.1",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/youtube-captions-scraper": "^1.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
