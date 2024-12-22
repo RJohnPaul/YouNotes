@@ -20,8 +20,18 @@ export default async function handler(
 
       res.status(200).json({ transcript: fullText })
     } catch (error) {
-      console.error('Error fetching transcript:', error)
-      res.status(500).json({ error: 'An error occurred while fetching the transcript' })
+      if (error instanceof Error) {
+        console.error('Error fetching transcript:', {
+          message: error.message,
+          stack: error.stack,
+          details: error, // This might give additional library-specific error details
+        });
+      } else {
+        console.error('Error fetching transcript:', {
+          message: String(error),
+          details: error, // This might give additional library-specific error details
+        });
+      }
     }
   } else {
     res.setHeader('Allow', ['POST'])
