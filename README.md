@@ -13,17 +13,17 @@ YouNotes is an AI-powered tool that automatically generates concise, well-struct
 - 🤖 AI-powered content analysis
 - 🚀 Fast and responsive web interface
 - 🔒 Secure user authentication
-- 📱 Mobile-friendly design
+- 📱 Responsive design
 
 ## Demo
 
-[Link to live demo-](https://you-notes-rouge.vercel.app/)
+[Click Here](https://you-notes-rouge.vercel.app/)
 
 ## Tech Stack
 
 - Frontend: React, Next.js
 - Backend: Node.js, Express
-- AI Processing: Google's Generative AI
+- AI Processing: Google's Generative AI (Gemini API)
 - Authentication: Supabase
 - Styling: Tailwind CSS
 - API Integration: RapidAPI (YouTube transcript retrieval)
