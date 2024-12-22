@@ -37,7 +37,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       // Fetch the transcript with retries and timeout handling
-      const transcript = await fetchWithRetry(url);
+      const transcript = await fetchWithRetry(url) as { text: string }[];
+
+      if (!transcript || transcript.length === 0) {
+        throw new Error('Transcript is empty or could not be fetched');
+      }
 
       // Combine all transcript parts into a single string
       const fullText = (transcript as { text: string }[]).map((part) => part.text).join(' ');
