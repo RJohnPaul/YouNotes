@@ -45,7 +45,9 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.165.0",
-    "three-globe": "^2.31.1"
+    "three-globe": "^2.31.1",
+    "youtube-transcript": "^1.2.1",
+    "youtube-transcript-api": "^1.1.2"
   },
   "devDependencies": {
     "@types/node": "^20.14.1",
