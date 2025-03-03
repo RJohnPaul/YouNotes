@@ -31,7 +31,7 @@ function getYouTubeVideoId(url: string): string | null {
  * @returns A promise that resolves when CORS headers are set.
  */
 async function handleCors(req: NextApiRequest, res: NextApiResponse) {
-  const allowedOrigins = ['https://you-notes-rouge.vercel.app/'];
+  const allowedOrigins = ['https://you-notes-rouge.vercel.app/', 'http://localhost:3000', 'https://younotes.onrender.com/'];
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin || '')) {
